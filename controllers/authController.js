@@ -1,3 +1,5 @@
+// controllers/authController.js
+
 const db = require('../db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -15,6 +17,8 @@ exports.login = async (req, res) => {
       tableName = 'doctors';
     } else if (role === 'secretary') {
       tableName = 'secretaries';
+    } else if (role === 'patient') {
+      tableName = 'patients';
     } else {
       return res.status(400).json({ message: 'Invalid role' });
     }

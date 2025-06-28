@@ -1,0 +1,50 @@
+
+=========================
+📘 Clinic System - API Endpoints Overview
+=========================
+
+[1] AUTHENTICATION
+------------------
+POST http://localhost:3000/api/auth/login
+  → Login as patient, doctor, or secretary
+  Body:
+  {
+    "email": "user@example.com",
+    "password": "123456",
+    "role": "patient" // or "doctor", "secretary"
+  }
+
+[2] PATIENT APIs
+------------------
+POST   http://localhost:3000/api/patients     	           → Create new patient (public)
+GET    /api/patients             			   → All patients (secretary/doctor/admin)
+GET    /api/patients/:id       			     → Patient info (self/doctor/secretary/admin)
+PUT    /api/patients/:id            → Update patient (self)
+DELETE /api/patients/:id            → Delete patient (secretary/admin)
+POST   /api/patients/documents/:id  → Upload medical file (patient only, Form-Data, key: file)
+
+[3] DOCTOR APIs
+------------------
+POST   /doctors/register              → Register new doctor
+GET    /doctors/patient/:id          → Get specific patient info
+PATCH  /doctors/documents/:id        → Review document { status: "approved"/"rejected" }
+
+[4] SECRETARY APIs
+------------------
+POST   /api/secretaries/register        → Register secretary
+POST   /api/secretaries/add-patient     → Add new patient
+PUT    /api/secretaries/edit-patient/:id → Update patient
+DELETE /api/secretaries/delete-patient/:id → Delete patient
+
+[5] APPOINTMENT APIs
+------------------
+POST   /api/appointments               → Create appointment (doctor/secretary)
+GET    /api/appointments               → All appointments (doctor/secretary)
+GET    /api/appointments/patient/:id  → Patient’s appointments
+GET    /api/appointments/doctor/:id   → Doctor’s appointments
+PATCH  /api/appointments/confirm/:id  → Confirm appointment (doctor/secretary)
+PATCH  /api/appointments/cancel/:id   → Cancel appointment (doctor/secretary)
+DELETE /api/appointments/cancel/:id   → Cancel by patient
+
+Note: All protected routes require Authorization header:
+Authorization: Bearer <token>
