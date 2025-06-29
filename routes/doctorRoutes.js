@@ -11,4 +11,5 @@ router.get('/patient/:id', authenticateToken, authorizeRoles('doctor'), doctorCo
 // الطبيب يقبل/يرفض مستندات مريض
 router.patch('/documents/:id', authenticateToken, authorizeRoles('doctor'), doctorController.reviewMedicalDocument);
 
+
 module.exports = router;

@@ -37,3 +37,29 @@ exports.reviewMedicalDocument = async (req, res) => {
     res.status(500).json({ error: 'Failed to update document status' });
   }
 };
+exports.addDoctorSchedule = async (req, res) => {
+  const { doctor_id, day_of_week, start_time, end_time } = req.body;
+  try {
+    await db.promise().query(
+      'INSERT INTO doctor_schedule (doctor_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)',
+      [doctor_id, day_of_week, start_time, end_time]
+    );
+    res.status(201).json({ message: 'تم إضافة دوام الطبيب بنجاح' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'خطأ أثناء إضافة الدوام' });
+  }
+};
+exports.addDoctorSchedule = async (req, res) => {
+  const { doctor_id, day_of_week, start_time, end_time } = req.body;
+  try {
+    await db.promise().query(
+      'INSERT INTO doctor_schedule (doctor_id, day_of_week, start_time, end_time) VALUES (?, ?, ?, ?)',
+      [doctor_id, day_of_week, start_time, end_time]
+    );
+    res.status(201).json({ message: 'تم إضافة دوام الطبيب بنجاح' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'خطأ أثناء إضافة الدوام' });
+  }
+};

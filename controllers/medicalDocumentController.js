@@ -24,6 +24,17 @@ exports.uploadDocument = (req, res) => {
   });
 };
 
+exports.getAllDocuments = (req, res) => {
+  medicalDocumentModel.getAllDocuments((err, documents) => {
+    if (err) {
+      console.error('Error fetching documents:', err);
+      return res.status(500).json({ error: 'Failed to fetch documents' });
+    }
+
+    res.status(200).json(documents);
+  });
+};
+
 exports.reviewDocument = (req, res) => {
   const documentId = req.params.id;
   const { status } = req.body;
@@ -41,3 +52,16 @@ exports.reviewDocument = (req, res) => {
     res.status(200).json({ message: 'Document status updated successfully' });
   });
 };
+exports.getDocumentsByPatient = (req, res) => {
+  const patientId = req.user.id;
+
+  medicalDocumentModel.getDocumentsByPatient(patientId, (err, results) => {
+    if (err) {
+      console.error('Error fetching documents:', err);
+      return res.status(500).json({ error: 'Failed to fetch documents' });
+    }
+
+    res.status(200).json(results);
+  });
+};
+

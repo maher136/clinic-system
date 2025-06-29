@@ -22,8 +22,16 @@ const updateDocumentStatus = (documentId, status, callback) => {
   db.query(sql, [status, documentId], callback);
 };
 
+exports.getAllDocuments = (callback) => {
+  const sql = 'SELECT * FROM medical_documents';
+  db.query(sql, callback);
+};
 module.exports = {
   uploadDocument,
   getDocumentsByPatient,
   updateDocumentStatus,
+};
+exports.getDocumentsByPatient = (patientId, callback) => {
+  const sql = 'SELECT * FROM medical_documents WHERE patient_id = ?';
+  db.query(sql, [patientId], callback);
 };

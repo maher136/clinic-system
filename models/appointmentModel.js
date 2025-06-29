@@ -126,3 +126,40 @@ exports.canCancelAppointment = (appointmentId, callback) => {
     }
   });
 };
+exports.getAppointmentDetails = (appointmentId, callback) => {
+  const sql = `
+    SELECT a.*, p.name AS patient_name, p.email AS patient_email
+    FROM appointments a
+    JOIN patients p ON a.patient_id = p.id
+    WHERE a.id = ?
+  `;
+
+  db.query(sql, [appointmentId], (err, results) => {
+    if (err || results.length === 0) return callback(err || new Error('Appointment not found'));
+
+    const appointment = results[0];
+
+    const docSql = `
+      SELECT id, file_path, status
+      FROM medical_documents
+      WHERE patient_id = ?
+    `;
+
+    db.query(docSql, [appointment.patient_id], (docErr, documents) => {
+      if (docErr) return callback(docErr);
+
+      callback(null, {
+        id: appointment.id,
+        date: appointment.date,
+        confirmed: appointment.confirmed,
+        doctor_id: appointment.doctor_id,
+        patient: {
+          id: appointment.patient_id,
+          name: appointment.patient_name,
+          email: appointment.patient_email
+        },
+        documents
+      });
+    });
+  });
+};

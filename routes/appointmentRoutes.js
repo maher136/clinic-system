@@ -24,4 +24,11 @@ router.patch('/cancel/:id', authenticateToken, authorizeRoles('doctor', 'secreta
 // إلغاء الموعد من جهة المريض (مريض فقط)
 router.delete('/cancel/:id', authenticateToken, authorizeRoles('patient'), appointmentController.cancelAppointmentByPatient);
 
+router.get(
+  '/details/:id',
+  authenticateToken,
+  authorizeRoles('doctor', 'secretary'),
+  appointmentController.getAppointmentDetails
+);
+
 module.exports = router;

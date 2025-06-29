@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const path = require('path');
 const multer = require('multer');
 const { authenticateToken, authorizeRoles } = require('../middlewares/authMiddleware');
 const medicalDocumentController = require('../controllers/medicalDocumentController');
@@ -26,6 +27,21 @@ router.patch(
   authenticateToken,
   authorizeRoles('doctor'),
   medicalDocumentController.reviewDocument
+);
+
+// عرض كل المستندات (للطبيب فقط)
+router.get(
+  '/',
+  authenticateToken,
+  authorizeRoles('doctor'),
+  medicalDocumentController.getAllDocuments
+);
+// المريض يعرض مستنداته
+router.get(
+  '/my-documents',
+  authenticateToken,
+  authorizeRoles('patient'),
+  medicalDocumentController.getDocumentsByPatient
 );
 
 module.exports = router;
