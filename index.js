@@ -7,7 +7,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const authRoutes = require('./routes/authRoutes');
 require('dotenv').config();
 
-const app = express(); // ✅ لازم يجي هون قبل app.use
+const app = express(); 
 
 const PORT = 3000;
 
@@ -21,7 +21,7 @@ app.use('/api/secretaries', secretaryRoutes);
 app.use('/api/appointments', appointmentRoutes);
 app.use('/doctors', doctorRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/documents', require('./routes/medicalDocumentRoutes')); // ✅ صار بمكانه الصحيح
+app.use('/api/documents', require('./routes/medicalDocumentRoutes')); 
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
