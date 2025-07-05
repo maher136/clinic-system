@@ -23,6 +23,7 @@ app.use('/doctors', doctorRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', require('./routes/medicalDocumentRoutes')); 
 
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
