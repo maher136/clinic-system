@@ -1,96 +1,78 @@
-const patientModel = require('../models/patientModel');
+const bcrypt = require('bcryptjs');
+const Doctor = require('../models/doctorModel');
+const db = require('../db'); // استخدام قاعدة البيانات مباشرة
 
-// جلب كل المرضى
-exports.getAllPatients = (req, res) => {
-  patientModel.getAllPatients((err, results) => {
-    if (err) {
-      console.error('Error fetching patients:', err);
-      return res.status(500).json({ error: 'Failed to fetch patients' });
-    }
-    res.status(200).json(results);
-  });
-};
-// جلب مريض واحد حسب الـ id
-exports.getPatientById = (req, res) => {
-  const id = req.params.id;
-  patientModel.getPatientById(id, (err, result) => {
-    if (err) {
-      console.error('Error fetching patient:', err);
-      return res.status(500).json({ error: 'Failed to fetch patient' });
-    }
-    if (!result || result.length === 0) {
-      return res.status(404).json({ error: 'Patient not found' });
-    }
-    res.status(200).json(result[0]);
-  });
-};
+// تسجيل طبيب جديد
+exports.registerDoctor = async (req, res) => {
+  try {
+    const { name, email, phone, password, specialty } = req.body;
 
-// إنشاء مريض جديد
-exports.createPatient = (req, res) => {
-  const patient = req.body;
-  patientModel.createPatient(patient, (err, result) => {
-    if (err) {
-      console.error('Error creating patient:', err);
-      return res.status(500).json({ error: 'Failed to create patient' });
+    if (!name || !email || !phone || !password || !specialty) {
+      return res.status(400).json({ message: 'All fields are required' });
     }
-    res.status(201).json({ message: 'Patient created successfully', id: result.insertId });
-  });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const doctorData = {
+      name,
+      email,
+      phone,
+      password: hashedPassword,
+      specialty,
+    };
+
+    const result = await Doctor.createDoctor(doctorData);
+
+    res.status(201).json({
+      message: 'Doctor registered successfully',
+      doctorId: result.insertId,
+    });
+  } catch (error) {
+    console.error('Error creating doctor:', error);
+    res.status(500).json({ error: 'Failed to create doctor' });
+  }
 };
 
-// تعديل بيانات مريض
-exports.updatePatient = (req, res) => {
-  const id = req.params.id;
-  const updatedPatient = req.body;
-  patientModel.updatePatient(id, updatedPatient, (err) => {
-    if (err) {
-      console.error('Error updating patient:', err);
-      return res.status(500).json({ error: 'Failed to update patient' });
-    }
-    res.status(200).json({ message: 'Patient updated successfully' });
-  });
-};
-
-// حذف مريض
-exports.deletePatient = (req, res) => {
-  const id = req.params.id;
-  patientModel.deletePatient(id, (err) => {
-    if (err) {
-      console.error('Error deleting patient:', err);
-      return res.status(500).json({ error: 'Failed to delete patient' });
-    }
-    res.status(200).json({ message: 'Patient deleted successfully' });
-  });
-};
-
-// رفع المستندات الطبية - (المريض فقط)
-exports.uploadMedicalDocument = (req, res) => {
-  const id = req.params.id;
-  // controllers/patientController.js
-exports.uploadMedicalDocument = (req, res) => {
+// جلب بيانات مريض معيّن
+exports.getPatientDetails = async (req, res) => {
   const patientId = req.params.id;
-  const file = req.file;
 
-  if (!file) {
-    return res.status(400).json({ error: 'No file uploaded' });
+  try {
+    const [rows] = await db.promise().query('SELECT * FROM patients WHERE id = ?', [patientId]);
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Patient not found' });
+    }
+
+    res.status(200).json({ patient: rows[0] });
+  } catch (error) {
+    console.error('Error fetching patient details:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+// مراجعة مستند طبي (قبول أو رفض)
+exports.reviewMedicalDocument = async (req, res) => {
+  const documentId = req.params.id;
+  const { status } = req.body;
+
+  if (!['approved', 'rejected'].includes(status)) {
+    return res.status(400).json({ error: 'Invalid status' });
   }
 
-  const sql = `
-    INSERT INTO medical_documents (patient_id, file_name, status)
-    VALUES (?, ?, 'pending')
-  `;
+  try {
+    const [result] = await db.promise().query(
+      'UPDATE medical_documents SET status = ? WHERE id = ?',
+      [status, documentId]
+    );
 
-  db.query(sql, [patientId, file.filename], (err, result) => {
-    if (err) {
-      console.error('Error uploading document:', err);
-      return res.status(500).json({ error: 'Failed to upload document' });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Document not found' });
     }
 
-    res.status(201).json({ message: 'Document uploaded successfully' });
-  });
-};
-
-  // هنا من المفترض تضيف الكود لتحميل الملف وحفظه وربطه بالمريض
-  // مثال (تحقق من وجود الملف، احفظه، حدث السجل في DB)
-  // ولأن الكود غير موجود عندك حالياً، هذا قالب مبدئي:
-  res.status(200).json({ message: `Medical document uploaded for patient id ${id}` });
+    res.status(200).json({ message: `Document ${status} successfully.` });
+  } catch (error) {
+    console.error('Error reviewing medical document:', error);
+    res.status(500).json({ error: 'Failed to update document status' });
+  }
 };
