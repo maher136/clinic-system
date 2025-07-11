@@ -4,7 +4,7 @@ const patientController = require('../controllers/patientController');
 const { authenticateToken, authorizeRoles } = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/upload');
 
-// كل المرضى (يحتاج توكن وصلاحية سكرتير أو طبيب أو مسؤول)
+// جلب كل المرضى (صلاحيات: سكرتير، طبيب، أدمن)
 router.get(
   '/',
   authenticateToken,
@@ -12,7 +12,7 @@ router.get(
   patientController.getAllPatients
 );
 
-// بيانات مريض محدد (المريض نفسه أو الطبيب أو السكرتير أو المسؤول)
+// جلب مريض حسب ID (صلاحيات: المريض نفسه أو دكتور أو سكرتير أو أدمن)
 router.get(
   '/:id',
   authenticateToken,
@@ -20,10 +20,10 @@ router.get(
   patientController.getPatientById
 );
 
-// إنشاء مريض جديد (بدون توكن، لأنه تسجيل جديد)
+// إنشاء مريض جديد (مفتوح بدون توكن - تسجيل)
 router.post('/', patientController.createPatient);
 
-// تعديل بيانات المريض (المريض نفسه فقط)
+// تعديل بيانات المريض (المريض فقط)
 router.put(
   '/:id',
   authenticateToken,
@@ -31,7 +31,7 @@ router.put(
   patientController.updatePatient
 );
 
-// حذف مريض (عادة صلاحية سكرتير أو مسؤول)
+// حذف مريض (سكرتير أو أدمن)
 router.delete(
   '/:id',
   authenticateToken,
@@ -39,13 +39,14 @@ router.delete(
   patientController.deletePatient
 );
 
-// رفع المستندات الطبية (المريض فقط مع رفع ملف واحد)
+// رفع مستند طبي (المريض فقط)
 router.post(
   '/documents/:id',
   authenticateToken,
   authorizeRoles('patient'),
-  upload.single('file'), // هنا رفع الملف الحي
+  upload.single('file'),
   patientController.uploadMedicalDocument
 );
+router.post('/reset-password', patientController.resetPassword);
 
 module.exports = router;

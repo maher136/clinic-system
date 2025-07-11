@@ -21,22 +21,23 @@ router.post(
   medicalDocumentController.uploadDocument
 );
 
-// الطبيب يراجع المستند (قبول/رفض)
+// مراجعة المستندات (طبيب أو آدمن)
 router.patch(
   '/review/:id',
   authenticateToken,
-  authorizeRoles('doctor'),
+  authorizeRoles('doctor', 'admin'),
   medicalDocumentController.reviewDocument
 );
 
-// عرض كل المستندات (للطبيب فقط)
+// عرض كل المستندات (طبيب أو آدمن)
 router.get(
   '/',
   authenticateToken,
-  authorizeRoles('doctor'),
+  authorizeRoles('doctor', 'admin'),
   medicalDocumentController.getAllDocuments
 );
-// المريض يعرض مستنداته
+
+// عرض المستندات الخاصة بمريض معين (المريض نفسه فقط)
 router.get(
   '/my-documents',
   authenticateToken,

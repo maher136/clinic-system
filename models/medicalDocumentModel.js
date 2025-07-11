@@ -10,28 +10,35 @@ const uploadDocument = (document, callback) => {
 
 const getDocumentsByPatient = (patientId, callback) => {
   const sql = `
-    SELECT * FROM medical_documents WHERE patient_id = ?
+    SELECT id, file_path, status, created_at 
+    FROM medical_documents 
+    WHERE patient_id = ?
+    ORDER BY created_at DESC
   `;
   db.query(sql, [patientId], callback);
+};
+
+const getAllDocuments = (callback) => {
+  const sql = `
+    SELECT id, patient_id, file_path, status, created_at 
+    FROM medical_documents
+    ORDER BY created_at DESC
+  `;
+  db.query(sql, callback);
 };
 
 const updateDocumentStatus = (documentId, status, callback) => {
   const sql = `
-    UPDATE medical_documents SET status = ? WHERE id = ?
+    UPDATE medical_documents 
+    SET status = ? 
+    WHERE id = ?
   `;
   db.query(sql, [status, documentId], callback);
 };
-
-exports.getAllDocuments = (callback) => {
-  const sql = 'SELECT * FROM medical_documents';
-  db.query(sql, callback);
-};
+//تصدير نهائي
 module.exports = {
   uploadDocument,
   getDocumentsByPatient,
+  getAllDocuments,
   updateDocumentStatus,
-};
-exports.getDocumentsByPatient = (patientId, callback) => {
-  const sql = 'SELECT * FROM medical_documents WHERE patient_id = ?';
-  db.query(sql, [patientId], callback);
 };

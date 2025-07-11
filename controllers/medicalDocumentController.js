@@ -1,8 +1,9 @@
 const path = require('path');
 const medicalDocumentModel = require('../models/medicalDocumentModel');
 
+// رفع المستند من قبل المريض
 exports.uploadDocument = (req, res) => {
-  const { patient_id } = req.body;
+  const patient_id = req.user.id;
   const file = req.file;
 
   if (!file) {
@@ -24,6 +25,7 @@ exports.uploadDocument = (req, res) => {
   });
 };
 
+// عرض كل المستندات (للطبيب أو الآدمن)
 exports.getAllDocuments = (req, res) => {
   medicalDocumentModel.getAllDocuments((err, documents) => {
     if (err) {
@@ -35,6 +37,21 @@ exports.getAllDocuments = (req, res) => {
   });
 };
 
+// المريض يعرض مستنداته
+exports.getDocumentsByPatient = (req, res) => {
+  const patientId = req.user.id;
+
+  medicalDocumentModel.getDocumentsByPatient(patientId, (err, results) => {
+    if (err) {
+      console.error('Error fetching patient documents:', err);
+      return res.status(500).json({ error: 'Failed to fetch documents' });
+    }
+
+    res.status(200).json(results);
+  });
+};
+
+// الطبيب يراجع المستند (يقبل أو يرفض)
 exports.reviewDocument = (req, res) => {
   const documentId = req.params.id;
   const { status } = req.body;
@@ -52,16 +69,3 @@ exports.reviewDocument = (req, res) => {
     res.status(200).json({ message: 'Document status updated successfully' });
   });
 };
-exports.getDocumentsByPatient = (req, res) => {
-  const patientId = req.user.id;
-
-  medicalDocumentModel.getDocumentsByPatient(patientId, (err, results) => {
-    if (err) {
-      console.error('Error fetching documents:', err);
-      return res.status(500).json({ error: 'Failed to fetch documents' });
-    }
-
-    res.status(200).json(results);
-  });
-};
-

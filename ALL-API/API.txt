@@ -1,50 +1,69 @@
+ 1️⃣تسجيل على النظام للطبيب
+POST | http://localhost:3000/api/doctors
+body : {
+  "name": "Dr. Ahmed",
+  "email": "doctor@example.com",
+  "phone": "0912345678",
+  "password": "123456",
+  "specialty": "Cardiology"
+}
+/////////////////
+2️⃣تسجيل على النظام للسكرتير
+POST | http://localhost:3000/api/secretaries
+body : {
+  "name": "Sarah Ali",
+  "email": "secretary@example.com",
+  "phone": "0998765432",
+  "password": "123456"
+}
+////////////////
+3️⃣تسجيل على النظام للمريض
+POST | 
+body : {http://localhost:3000/api/patients
 
-=========================
-📘 Clinic System - API Endpoints Overview
-=========================
-
-[1] AUTHENTICATION
-------------------
-POST http://localhost:3000/api/auth/login
-  → Login as patient, doctor, or secretary
-  Body:
   {
-    "email": "user@example.com",
-    "password": "123456",
-    "role": "patient" // or "doctor", "secretary"
-  }
+  "name": "Ali",
+  "email": "ali@example.com",
+  "phone": "0999999999",
+  "password": "12345678",
+  "gender": "male"
+}
+//////////////////
+3️⃣ تسجيل على النظام للأدمن 
+ POST | http://localhost:3000/api/admins/register
+ body {
+  "name": "Admin User",
+  "email": "admin@example.com",
+  "phone": "0999999999",
+  "password": "admin123"
+}
 
-[2] PATIENT APIs
-------------------
-POST   http://localhost:3000/api/patients     	           → Create new patient (public)
-GET    /api/patients             			   → All patients (secretary/doctor/admin)
-GET    /api/patients/:id       			     → Patient info (self/doctor/secretary/admin)
-PUT    /api/patients/:id            → Update patient (self)
-DELETE /api/patients/:id            → Delete patient (secretary/admin)
-POST   /api/patients/documents/:id  → Upload medical file (patient only, Form-Data, key: file)
-
-[3] DOCTOR APIs
-------------------
-POST   /doctors/register              → Register new doctor
-GET    /doctors/patient/:id          → Get specific patient info
-PATCH  /doctors/documents/:id        → Review document { status: "approved"/"rejected" }
-
-[4] SECRETARY APIs
-------------------
-POST   /api/secretaries/register        → Register secretary
-POST   /api/secretaries/add-patient     → Add new patient
-PUT    /api/secretaries/edit-patient/:id → Update patient
-DELETE /api/secretaries/delete-patient/:id → Delete patient
-
-[5] APPOINTMENT APIs
-------------------
-POST   /api/appointments               → Create appointment (doctor/secretary)
-GET    /api/appointments               → All appointments (doctor/secretary)
-GET    /api/appointments/patient/:id  → Patient’s appointments
-GET    /api/appointments/doctor/:id   → Doctor’s appointments
-PATCH  /api/appointments/confirm/:id  → Confirm appointment (doctor/secretary)
-PATCH  /api/appointments/cancel/:id   → Cancel appointment (doctor/secretary)
-DELETE /api/appointments/cancel/:id   → Cancel by patient
-
-Note: All protected routes require Authorization header:
-Authorization: Bearer <token>
+⚠️⚠️<<<<< تاكدو ما تكون المعلومات موجودة قبل >>>>>>⚠️⚠️
+//////////////////////////
+‼️ LOG IN ‼️
+POST | http://localhost:3000/api/auth/login
+هي الصيغة بتسجلو فيها لكل الطلبات
+body : {
+  "email": "patient@example.com",
+  "password": "123456",
+  "role": "patient" ===> ((secretary/doctor/patient/admin)هون فقط بتغيرو ب نوع المستخدم مريض او طبيب او سكرتير)
+}
+//////////////////////////
+اعادة نعيين كلمة المرور(reset-password)
+PATCH | http://localhost:3000/api/auth/reset-password ==> "ثابتة لكل الطلبات"
+body : {
+  "email": "ali@example.com",
+  "newPassword": "newpass123",
+  "role": "patient"==> "حسب مين المسنخدم يلي رح يغير كلمة المرور"
+} FOR ‼️DOCTOR‼️
+  {
+  "email": "doctor@example.com",
+  "newPassword": "newpass123",
+  "role": "doctor"
+}   FOR ‼️secretary‼️
+  {
+  "email": "secretary@example.com",
+  "newPassword": "newpass123",
+  "role": "secretary"
+}
+‼️تاكدو من وجود حساب في النظام لكل مستخدم‼️

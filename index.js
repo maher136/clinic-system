@@ -5,6 +5,8 @@ const secretaryRoutes = require('./routes/secretaryRoutes');
 const doctorRoutes = require('./routes/doctorRoutes');
 const appointmentRoutes = require('./routes/appointmentRoutes');
 const authRoutes = require('./routes/authRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+
 require('dotenv').config();
 
 const app = express(); 
@@ -22,7 +24,7 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/doctors', doctorRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/documents', require('./routes/medicalDocumentRoutes')); 
-
+app.use('/api/admins', adminRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
